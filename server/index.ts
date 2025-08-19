@@ -76,11 +76,19 @@ app.post('/generate-contract', async (req: any, res: any) => {
       // Fallback to mock content if OpenAI fails
       contractContent = `This is a draft ${contractType} between our company and ${clientName} located at ${clientAddress}. The terms and conditions will be finalized upon mutual agreement. This contract serves as a preliminary document for review and discussion.`;
     }
-
+    const createdAt = new Date().toISOString();
+    const updatedAt = new Date().toISOString();
+    const id = generateId();
+    const readData = readDataFile();
+    var existingContracts = readData.contracts || [];
+    var contractToSubmit = {clientAddress,clientName,contractContent,contractType,createdAt,id,updatedAt};
+    existingContracts.push(contractToSubmit);
+    console.log('Existing contracts:', existingContracts);
+    writeDataFile({contracts:existingContracts} );
     res.status(201).json({
       success: true,
       message: 'Contract generated successfully',
-      data: {},
+      data: { 'id': id, clientName: clientName, clientAddress: clientAddress, contractType: contractType, contractContent: contractContent ,createdAt: createdAt, updatedAt: updatedAt },
     });
   } catch (error) {
     console.error('Error generating contract:', error);
@@ -94,10 +102,14 @@ app.post('/generate-contract', async (req: any, res: any) => {
 // GET /contracts - Get all contracts
 app.get('/contracts', (req: any, res: any) => {
   try {
+    const readData = readDataFile();
+    const contracts = readData.contracts || [];
+    
+    console.log('Read data:', readData);
     res.json({
       success: true,
-      data: [],
-      count: 0,
+      data: contracts,
+      count: contracts.length,
     });
   } catch (error) {
     console.error('Error reading contracts:', error);
@@ -198,7 +210,7 @@ app.delete('/contracts/:id', (req: any, res: any) => {
 // AI Chat endpoint for contract support and advice
 app.post('/ai-chat', async (req: any, res: any) => {
   try {
-    const message = null;
+    const message = req.body.message; // req.body.message;
 
     if (!message || typeof message !== 'string') {
       return res.status(400).json({

@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import EditContract from './components/EditContract';
+import GeneratedContracts from './components/GeneratedContracts';
 import './App.css';
 
 interface Contract {
@@ -55,15 +57,14 @@ function App() {
   ];
 
   useEffect(() => {
+    
     fetchContracts();
   }, []);
 
   const fetchContracts = async () => {
     try {
-      const data = {
-        success: false,
-        data: [],
-      };
+        const response = await fetch('/contracts');
+        const data = await response.json();
       if (data.success) {
         setContracts(data.data);
       }
@@ -75,12 +76,18 @@ function App() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
-    try {
-      const data = {
+    const { clientName, clientAddress, contractType } = formData;
+     try {
+        const response = await fetch('/generate-contract', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json' },
+        body: JSON.stringify({ clientName: clientName, clientAddress: clientAddress, contractType: contractType }),
+      });
+      const data = await response.json();
+      /*const data = {
         success: false,
         message: 'Supply missing code',
-      };
+      };*/
       if (data.success) {
         setFormData({
           clientName: '',
@@ -94,6 +101,7 @@ function App() {
       console.error('Error generating contract:', error);
       alert('Error generating contract');
     } finally {
+      fetchContracts();
       setLoading(false);
     }
   };
@@ -131,7 +139,7 @@ function App() {
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingContract) return;
-
+    console.log('Updating contract:', editFormData);
     try {
       const data = {
         success: false,
@@ -174,7 +182,7 @@ function App() {
       isUser: true,
       timestamp: new Date(),
     };
-
+    console.log('User message:', userMessage);
     setChatMessages((prev) => [...prev, userMessage]);
     setChatInput('');
 
@@ -186,16 +194,22 @@ function App() {
       timestamp: new Date(),
     };
     setChatMessages((prev) => [...prev, loadingMessage]);
-
+    console.log('chat input:', chatInput);
     try {
-      const data = {
+        const response = await fetch('/ai-chat', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: chatInput }),
+      });
+      const data = await response.json();
+      console.log('AI response:', data);
+      /*const data = {
         success: false,
         message: 'Supply missing code',
         data: {
           response: 'Supply missing code',
         },
-      };
-
+      };*/
       if (data.success) {
         // Remove loading message and add AI response
         setChatMessages((prev) =>
@@ -316,21 +330,50 @@ function App() {
             </button>
           </form>
         </div>
-
-        <div className="contracts-section">
+        <GeneratedContracts
+          contracts={contracts}
+          handleEdit={handleEdit}
+          handleDelete={handleDelete}
+        />
+      
+       {/* <div className="contracts-section">
           <h2>Generated Contracts ({contracts.length})</h2>
           {contracts.length === 0 ? (
             <p className="no-contracts">
               No contracts generated yet.
             </p>
           ) : (
-            <div className="contracts-list"></div>
+            <div className="contracts-list">
+            <ul>
+            {contracts.map((contract) => (
+              <li key={contract.id}>
+                <strong>{contract.contractType}</strong> for {contract.clientName} at {contract.clientAddress}
+                <br />
+                <em>{contract.contractContent}</em>
+                <br />
+                <button onClick={() => handleEdit(contract)}>Edit</button>
+                <button onClick={() => handleDelete(contract.id)}>Delete</button>
+              </li>
+            ))}
+            </ul>
+            </div>
           )}
-        </div>
+        </div> */}
 
         {/* Edit Contract Modal */}
         {editingContract && (
-          <div className="edit-modal-overlay">
+          <EditContract
+            handleUpdate={handleUpdate}
+            contractContent={editingContract.contractContent}
+            contractType={editingContract.contractType}
+            contractAddress={editingContract.clientAddress}
+            contractName={editingContract.clientName}
+            id={editingContract.id}
+            handleCancelEdit={handleCancelEdit}
+            
+            
+          />
+          /*<div className="edit-modal-overlay">
             <div className="edit-modal">
               <h2>Edit Contract</h2>
               <form onSubmit={handleUpdate} className="edit-form">
@@ -348,7 +391,7 @@ function App() {
                 </div>
               </form>
             </div>
-          </div>
+          </div>*/
         )}
 
         {showChat && (
