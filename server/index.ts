@@ -129,7 +129,9 @@ app.get('/contracts', (req: any, res: any) => {
 // GET /contracts/:id - Get a specific contract
 app.get('/contracts/:id', (req: any, res: any) => {
   try {
-    const contract = null;
+    const contract = readDataFile().contracts.find(
+      (contract: Contract) => contract.id === req.params.id
+    );
 
     if (!contract) {
       return res.status(404).json({
@@ -140,7 +142,14 @@ app.get('/contracts/:id', (req: any, res: any) => {
 
     res.json({
       success: true,
-      data: {},
+      data: {
+        id: req.params.id,
+        name: contract.clientName,
+        description: contract.contractContent,
+        createdAt: contract.createdAt,
+        updatedAt: contract.updatedAt,
+        contractType: contract.contractType
+      },
     });
   } catch (error) {
     console.error('Error reading contract:', error);
