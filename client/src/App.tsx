@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import EditContract from './components/EditContract';
-import GeneratedContracts from './components/GeneratedContracts';
-import './App.css';
+import React, { useState, useEffect } from "react";
+import EditContract from "./components/EditContract";
+import GeneratedContracts from "./components/GeneratedContracts";
+import "./App.css";
 
 interface Contract {
   id: string;
   clientName: string;
   clientAddress: string;
-  contractType: 'Employment Agreement' | 'Loan' | 'Service Agreement';
+  contractType: "Employment Agreement" | "Loan" | "Service Agreement";
   contractContent: string;
   createdAt: string;
   updatedAt: string;
@@ -24,66 +24,60 @@ function App() {
   const [contracts, setContracts] = useState<Contract[]>([]);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    clientName: '',
-    clientAddress: '',
-    contractType: 'Employment Agreement' as const,
+    clientName: "",
+    clientAddress: "",
+    contractType: "Employment Agreement" as const,
   });
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
     {
-      id: '1',
+      id: "1",
       text: "Hello! I'm your AI legal assistant specializing in contract law and business agreements. I can help you with contract-related questions, legal terms, negotiation tips, and best practices. What would you like to know about contracts?",
       isUser: false,
       timestamp: new Date(),
     },
   ]);
-  const [chatInput, setChatInput] = useState('');
+  const [chatInput, setChatInput] = useState("");
   const [showChat, setShowChat] = useState(false);
-  const [editingContract, setEditingContract] =
-    useState<Contract | null>(null);
+  const [editingContract, setEditingContract] = useState<Contract | null>(null);
   const [editFormData, setEditFormData] = useState({
-    clientName: '',
-    clientAddress: '',
-    contractType: 'Employment Agreement' as
-      | 'Employment Agreement'
-      | 'Loan'
-      | 'Service Agreement',
-    contractContent: '',
+    clientName: "",
+    clientAddress: "",
+    contractType: "Employment Agreement" as
+      | "Employment Agreement"
+      | "Loan"
+      | "Service Agreement",
+    contractContent: "",
   });
 
   const [updateFormData, setUpdateFormData] = useState({
-    contractName: '',
-    contractAddress: '',
-    contractType: 'Employment Agreement' as
-      | 'Employment Agreement'
-      | 'Loan'
-      | 'Service Agreement',
-    contractContent: '',
-    id: '',
+    contractName: "",
+    contractAddress: "",
+    contractType: "Employment Agreement" as
+      | "Employment Agreement"
+      | "Loan"
+      | "Service Agreement",
+    contractContent: "",
+    id: "",
   });
 
-  const contractTypes = [
-    'Employment Agreement',
-    'Loan',
-    'Service Agreement',
-  ];
+  const contractTypes = ["Employment Agreement", "Loan", "Service Agreement"];
 
   useEffect(() => {
-    
     fetchContracts();
   }, []);
 
   const fetchContracts = async () => {
     try {
-        const response = await fetch('http://localhost:8080/contracts',{
-        method: 'GET',
-        headers: { }
-        });
-        const data = await response.json();
+      const response = await fetch("http://localhost:8080/contracts", {
+        method: "GET",
+        headers: {},
+      });
+      const data = await response.json();
       if (data.success) {
         setContracts(data.data);
       }
     } catch (error) {
-      console.error('Error fetching contracts:', error);
+      console.error("Error fetching contracts:", error);
     }
   };
 
@@ -91,11 +85,15 @@ function App() {
     e.preventDefault();
     setLoading(true);
     const { clientName, clientAddress, contractType } = formData;
-     try {
-        const response = await fetch('http://localhost:8080/generate-contract', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json' },
-        body: JSON.stringify({ clientName: clientName, clientAddress: clientAddress, contractType: contractType }),
+    try {
+      const response = await fetch("http://localhost:8080/generate-contract", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          clientName: clientName,
+          clientAddress: clientAddress,
+          contractType: contractType,
+        }),
       });
       const data = await response.json();
       /*const data = {
@@ -104,16 +102,16 @@ function App() {
       };*/
       if (data.success) {
         setFormData({
-          clientName: '',
-          clientAddress: '',
-          contractType: 'Employment Agreement',
+          clientName: "",
+          clientAddress: "",
+          contractType: "Employment Agreement",
         });
       } else {
-        alert('Error generating contract: ' + data.message);
+        alert("Error generating contract: " + data.message);
       }
     } catch (error) {
-      console.error('Error generating contract:', error);
-      alert('Error generating contract');
+      console.error("Error generating contract:", error);
+      alert("Error generating contract");
     } finally {
       fetchContracts();
       setLoading(false);
@@ -122,22 +120,20 @@ function App() {
 
   const handleDelete = async (id: string) => {
     setLoading(true);
-    if (
-      window.confirm('Are you sure you want to delete this contract?')
-    ) {
+    if (window.confirm("Are you sure you want to delete this contract?")) {
       try {
         const response = await fetch(`http://localhost:8080/contracts/${id}`, {
-        method: 'DELETE',
-        headers: {'Content-Type': 'application/json' }
-      });
-      const data = await response.json();
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+        });
+        const data = await response.json();
         if (data.success) {
         } else {
-          alert('Error deleting contract: ' + data.message);
+          alert("Error deleting contract: " + data.message);
         }
       } catch (error) {
-        console.error('Error deleting contract:', error);
-        alert('Error deleting contract');
+        console.error("Error deleting contract:", error);
+        alert("Error deleting contract");
       } finally {
         fetchContracts();
         setLoading(false);
@@ -155,43 +151,48 @@ function App() {
     });
   };
 
-  const handleUpdate = async (e: React.FormEvent<HTMLFormElement>,
-  updateFormData: {
-    contractName: string;
-    contractAddress: string;
-    contractType: 'Employment Agreement' | 'Loan' | 'Service Agreement';
-    contractContent: string;
-    id: string;
-  }) => {
+  const handleUpdate = async (
+    e: React.FormEvent<HTMLFormElement>,
+    updateFormData: {
+      contractName: string;
+      contractAddress: string;
+      contractType: "Employment Agreement" | "Loan" | "Service Agreement";
+      contractContent: string;
+      id: string;
+    }
+  ) => {
     e.preventDefault();
     if (!editingContract) return;
-    console.log('Updating contract:', updateFormData);
+    console.log("Updating contract:", updateFormData);
     try {
-        const response = await fetch(`http://localhost:8080/contracts/${updateFormData.id}`, {
-        method: 'PUT',
-        headers: {'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          clientName: updateFormData.contractName,
-          clientAddress: updateFormData.contractAddress,
-          contractType: updateFormData.contractType,
-          contractContent: updateFormData.contractContent
-        })
-      });
+      const response = await fetch(
+        `http://localhost:8080/contracts/${updateFormData.id}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            clientName: updateFormData.contractName,
+            clientAddress: updateFormData.contractAddress,
+            contractType: updateFormData.contractType,
+            contractContent: updateFormData.contractContent,
+          }),
+        }
+      );
       const data = await response.json();
       if (data.success) {
         setEditingContract(null);
         setEditFormData({
-          clientName: '',
-          clientAddress: '',
-          contractType: 'Employment Agreement',
-          contractContent: '',
+          clientName: "",
+          clientAddress: "",
+          contractType: "Employment Agreement",
+          contractContent: "",
         });
       } else {
-        alert('Error updating contract: ' + data.message);
+        alert("Error updating contract: " + data.message);
       }
     } catch (error) {
-      console.error('Error updating contract:', error);
-      alert('Error updating contract');
+      console.error("Error updating contract:", error);
+      alert("Error updating contract");
     } finally {
       fetchContracts();
     }
@@ -200,10 +201,10 @@ function App() {
   const handleCancelEdit = () => {
     setEditingContract(null);
     setEditFormData({
-      clientName: '',
-      clientAddress: '',
-      contractType: 'Employment Agreement',
-      contractContent: '',
+      clientName: "",
+      clientAddress: "",
+      contractType: "Employment Agreement",
+      contractContent: "",
     });
   };
 
@@ -217,27 +218,27 @@ function App() {
       isUser: true,
       timestamp: new Date(),
     };
-    console.log('User message:', userMessage);
+    console.log("User message:", userMessage);
     setChatMessages((prev) => [...prev, userMessage]);
-    setChatInput('');
+    setChatInput("");
 
     // Add loading state for AI response
     const loadingMessage: ChatMessage = {
       id: (Date.now() + 1).toString(),
-      text: 'Thinking...',
+      text: "Thinking...",
       isUser: false,
       timestamp: new Date(),
     };
     setChatMessages((prev) => [...prev, loadingMessage]);
-    console.log('chat input:', chatInput);
+    console.log("chat input:", chatInput);
     try {
-        const response = await fetch('/ai-chat', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json' },
+      const response = await fetch("/ai-chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: chatInput }),
       });
       const data = await response.json();
-      console.log('AI response:', data);
+      console.log("AI response:", data);
       /*const data = {
         success: false,
         message: 'Supply missing code',
@@ -264,14 +265,14 @@ function App() {
         );
         const errorMessage: ChatMessage = {
           id: (Date.now() + 2).toString(),
-          text: 'Sorry, I encountered an error. Please try asking your question again.',
+          text: "Sorry, I encountered an error. Please try asking your question again.",
           isUser: false,
           timestamp: new Date(),
         };
         setChatMessages((prev) => [...prev, errorMessage]);
       }
     } catch (error) {
-      console.error('Error in AI chat:', error);
+      console.error("Error in AI chat:", error);
       // Remove loading message and add error response
       setChatMessages((prev) =>
         prev.filter((msg) => msg.id !== loadingMessage.id)
@@ -294,7 +295,7 @@ function App() {
           className="chat-toggle-btn"
           onClick={() => setShowChat(!showChat)}
         >
-          {showChat ? 'Hide Chat' : 'Show Chat'}
+          {showChat ? "Hide Chat" : "Show Chat"}
         </button>
       </header>
 
@@ -356,12 +357,8 @@ function App() {
               />
             </div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="submit-btn"
-            >
-              {loading ? 'Generating...' : 'Generate Contract'}
+            <button type="submit" disabled={loading} className="submit-btn">
+              {loading ? "Generating..." : "Generate Contract"}
             </button>
           </form>
         </div>
@@ -370,30 +367,6 @@ function App() {
           handleEdit={handleEdit}
           handleDelete={handleDelete}
         />
-      
-       {/* <div className="contracts-section">
-          <h2>Generated Contracts ({contracts.length})</h2>
-          {contracts.length === 0 ? (
-            <p className="no-contracts">
-              No contracts generated yet.
-            </p>
-          ) : (
-            <div className="contracts-list">
-            <ul>
-            {contracts.map((contract) => (
-              <li key={contract.id}>
-                <strong>{contract.contractType}</strong> for {contract.clientName} at {contract.clientAddress}
-                <br />
-                <em>{contract.contractContent}</em>
-                <br />
-                <button onClick={() => handleEdit(contract)}>Edit</button>
-                <button onClick={() => handleDelete(contract.id)}>Delete</button>
-              </li>
-            ))}
-            </ul>
-            </div>
-          )}
-        </div> */}
 
         {/* Edit Contract Modal */}
         {editingContract && (
@@ -405,28 +378,7 @@ function App() {
             contractName={editingContract.clientName}
             id={editingContract.id}
             handleCancelEdit={handleCancelEdit}
-           
-            
           />
-          /*<div className="edit-modal-overlay">
-            <div className="edit-modal">
-              <h2>Edit Contract</h2>
-              <form onSubmit={handleUpdate} className="edit-form">
-                <div className="edit-form-actions">
-                  <button type="submit" className="update-btn">
-                    Update Contract
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleCancelEdit}
-                    className="cancel-btn"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>*/
         )}
 
         {showChat && (
@@ -436,23 +388,16 @@ function App() {
               {chatMessages.map((message) => (
                 <div
                   key={message.id}
-                  className={`chat-message ${
-                    message.isUser ? 'user' : 'ai'
-                  }`}
+                  className={`chat-message ${message.isUser ? "user" : "ai"}`}
                 >
-                  <div className="message-content">
-                    {message.text}
-                  </div>
+                  <div className="message-content">{message.text}</div>
                   <div className="message-time">
                     {message.timestamp.toLocaleTimeString()}
                   </div>
                 </div>
               ))}
             </div>
-            <form
-              onSubmit={handleChatSubmit}
-              className="chat-input-form"
-            >
+            <form onSubmit={handleChatSubmit} className="chat-input-form">
               <input
                 type="text"
                 value={chatInput}
