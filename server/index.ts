@@ -1,4 +1,6 @@
 import express from 'express';
+import cors from 'cors';
+
 import dotenv from 'dotenv';
 import OpenAI from 'openai';
 import {
@@ -14,6 +16,10 @@ dotenv.config();
 const port = process.env.PORT || 8080;
 const app = express();
 
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+}));
 // Initialize OpenAI
 const openai = new OpenAI({
   baseURL:
@@ -148,16 +154,7 @@ app.get('/contracts/:id', (req: any, res: any) => {
 // PUT /contracts/:id - Update a contract
 app.put('/contracts/:id', (req: any, res: any) => {
   try {
-    const constract = null;
-
-    if (!constract) {
-      return res.status(404).json({
-        success: false,
-        message: 'Contract not found',
-      });
-    }
-
-    const validation = validateContract(req.body);
+    const validation = validateContract(req.body); // moved validation here
 
     if (!validation.isValid) {
       return res.status(400).json({
@@ -167,10 +164,41 @@ app.put('/contracts/:id', (req: any, res: any) => {
       });
     }
 
+    const contractId = req.params.id;
+    const readData = readDataFile();
+    const contracts = readData.contracts || [];
+    const contractIndex = contracts.findIndex((c: Contract) => c.id === contractId);
+    const contract = contracts[contractIndex];
+    
+
+    if (!contract) {
+      return res.status(404).json({
+        success: false,
+        message: 'Contract not found',
+      });
+    }
+    const updatedAt = new Date().toISOString();
+    contracts[contractIndex] = {
+      ...contracts[contractIndex],
+      clientName: req.body.clientName || contracts[contractIndex].clientName,
+      clientAddress: req.body.clientAddress || contracts[contractIndex].clientAddress,
+      contractType: req.body.contractType || contracts[contractIndex].contractType,
+      contractContent: req.body.contractContent || contracts[contractIndex].contractContent,
+      updatedAt: updatedAt,
+    };
+
+    writeDataFile({ contracts });
+
     res.json({
       success: true,
       message: 'Contract updated successfully',
-      data: {},
+      data: {
+        clientName: req.body.clientName || contracts[contractIndex].clientName,
+      clientAddress: req.body.clientAddress || contracts[contractIndex].clientAddress,
+      contractType: req.body.contractType || contracts[contractIndex].contractType,
+      contractContent: req.body.contractContent || contracts[contractIndex].contractContent,
+      updatedAt: updatedAt
+    },
     });
   } catch (error) {
     console.error('Error updating contract:', error);
@@ -184,7 +212,9 @@ app.put('/contracts/:id', (req: any, res: any) => {
 // DELETE /contracts/:id - Delete a contract
 app.delete('/contracts/:id', (req: any, res: any) => {
   try {
-    const contract = null;
+    const contract = readDataFile().contracts.find(
+      (contract: Contract) => contract.id === req.params.id
+    );
 
     if (!contract) {
       return res.status(404).json({
@@ -193,10 +223,25 @@ app.delete('/contracts/:id', (req: any, res: any) => {
       });
     }
 
+    const contractFiltered = readDataFile().contracts.filter(
+      (contract: Contract) => contract.id !== req.params.id
+    );
+    writeDataFile({ contracts: contractFiltered });
+
+    console.log('Contract deleted:', contract.id);
+    console.log('Remaining contracts:', contractFiltered.length);
+
     res.json({
       success: true,
       message: 'Contract deleted successfully',
-      data: {},
+      data: {
+        id: req.params.id,
+        name: contract.clientName,
+        description: contract.contractContent,
+        createdAt: contract.createdAt,
+        updatedAt: contract.updatedAt,
+        contractType: contract.contractType,
+      },
     });
   } catch (error) {
     console.error('Error deleting contract:', error);

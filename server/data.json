@@ -1,31 +1,22 @@
 {
   "contracts": [
     {
-      "clientAddress": "Makati",
-      "clientName": "Neil",
-      "contractContent": "This is a draft Loan between our company and Neil located at Makati. The terms and conditions will be finalized upon mutual agreement. This contract serves as a preliminary document for review and discussion.",
-      "contractType": "Loan",
-      "createdAt": "2025-08-19T15:05:08.497Z",
-      "id": "meiodspdg5fv39l1rfl",
-      "updatedAt": "2025-08-19T15:05:08.497Z"
+      "clientAddress": "BatangasC",
+      "clientName": "AllenS",
+      "contractContent": "This is a draft Employment Agreement between our company and Allen located at Batangas. The terms and conditions will be finalized upon mutual agreement. This contract serves as a preliminary document for review and discussion.Test",
+      "contractType": "Employment Agreement",
+      "createdAt": "2025-08-19T17:51:51.156Z",
+      "id": "meiuc6t0r5t95afpnhs",
+      "updatedAt": "2025-08-19T17:55:15.026Z"
     },
     {
-      "clientAddress": "Cyber City",
-      "clientName": "V",
-      "contractContent": "This is a draft Employment Agreement between our company and V located at Cyber City. The terms and conditions will be finalized upon mutual agreement. This contract serves as a preliminary document for review and discussion.",
+      "clientAddress": "Japan",
+      "clientName": "Ken ",
+      "contractContent": "This is a draft Employment Agreement between our company and Ken  located at Japan. The terms and conditions will be finalized upon mutual agreement. This contract serves as a preliminary document for review and discussion.",
       "contractType": "Employment Agreement",
-      "createdAt": "2025-08-19T15:06:14.248Z",
-      "id": "meiof7ft6yzcxctpdvf",
-      "updatedAt": "2025-08-19T15:06:14.249Z"
-    },
-    {
-      "clientAddress": "Pasig",
-      "clientName": "Mich",
-      "contractContent": "This is a draft Employment Agreement between our company and Mich located at Pasig. The terms and conditions will be finalized upon mutual agreement. This contract serves as a preliminary document for review and discussion.",
-      "contractType": "Employment Agreement",
-      "createdAt": "2025-08-19T15:06:25.009Z",
-      "id": "meioffqpudxcccsxzsl",
-      "updatedAt": "2025-08-19T15:06:25.009Z"
+      "createdAt": "2025-08-19T17:52:06.499Z",
+      "id": "meiucin7ol6yu05qeoi",
+      "updatedAt": "2025-08-19T17:52:06.499Z"
     }
   ]
 }

@@ -50,6 +50,17 @@ function App() {
     contractContent: '',
   });
 
+  const [updateFormData, setUpdateFormData] = useState({
+    contractName: '',
+    contractAddress: '',
+    contractType: 'Employment Agreement' as
+      | 'Employment Agreement'
+      | 'Loan'
+      | 'Service Agreement',
+    contractContent: '',
+    id: '',
+  });
+
   const contractTypes = [
     'Employment Agreement',
     'Loan',
@@ -63,7 +74,10 @@ function App() {
 
   const fetchContracts = async () => {
     try {
-        const response = await fetch('/contracts');
+        const response = await fetch('http://localhost:8080/contracts',{
+        method: 'GET',
+        headers: { }
+        });
         const data = await response.json();
       if (data.success) {
         setContracts(data.data);
@@ -78,7 +92,7 @@ function App() {
     setLoading(true);
     const { clientName, clientAddress, contractType } = formData;
      try {
-        const response = await fetch('/generate-contract', {
+        const response = await fetch('http://localhost:8080/generate-contract', {
         method: 'POST',
         headers: {'Content-Type': 'application/json' },
         body: JSON.stringify({ clientName: clientName, clientAddress: clientAddress, contractType: contractType }),
@@ -107,14 +121,16 @@ function App() {
   };
 
   const handleDelete = async (id: string) => {
+    setLoading(true);
     if (
       window.confirm('Are you sure you want to delete this contract?')
     ) {
       try {
-        const data = {
-          success: false,
-          message: 'Supply missing code',
-        };
+        const response = await fetch(`http://localhost:8080/contracts/${id}`, {
+        method: 'DELETE',
+        headers: {'Content-Type': 'application/json' }
+      });
+      const data = await response.json();
         if (data.success) {
         } else {
           alert('Error deleting contract: ' + data.message);
@@ -122,6 +138,9 @@ function App() {
       } catch (error) {
         console.error('Error deleting contract:', error);
         alert('Error deleting contract');
+      } finally {
+        fetchContracts();
+        setLoading(false);
       }
     }
   };
@@ -136,15 +155,29 @@ function App() {
     });
   };
 
-  const handleUpdate = async (e: React.FormEvent) => {
+  const handleUpdate = async (e: React.FormEvent<HTMLFormElement>,
+  updateFormData: {
+    contractName: string;
+    contractAddress: string;
+    contractType: 'Employment Agreement' | 'Loan' | 'Service Agreement';
+    contractContent: string;
+    id: string;
+  }) => {
     e.preventDefault();
     if (!editingContract) return;
-    console.log('Updating contract:', editFormData);
+    console.log('Updating contract:', updateFormData);
     try {
-      const data = {
-        success: false,
-        message: 'Supply missing code',
-      };
+        const response = await fetch(`http://localhost:8080/contracts/${updateFormData.id}`, {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          clientName: updateFormData.contractName,
+          clientAddress: updateFormData.contractAddress,
+          contractType: updateFormData.contractType,
+          contractContent: updateFormData.contractContent
+        })
+      });
+      const data = await response.json();
       if (data.success) {
         setEditingContract(null);
         setEditFormData({
@@ -159,6 +192,8 @@ function App() {
     } catch (error) {
       console.error('Error updating contract:', error);
       alert('Error updating contract');
+    } finally {
+      fetchContracts();
     }
   };
 
@@ -370,7 +405,7 @@ function App() {
             contractName={editingContract.clientName}
             id={editingContract.id}
             handleCancelEdit={handleCancelEdit}
-            
+           
             
           />
           /*<div className="edit-modal-overlay">

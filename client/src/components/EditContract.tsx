@@ -1,7 +1,17 @@
 import { useState } from "react";
 
 type EditContractProps = {
-  handleUpdate: (event: React.FormEvent<HTMLFormElement>) => void;
+  handleUpdate: (
+    event: React.FormEvent<HTMLFormElement>,
+    updateFormData: {
+      contractName: string;
+      contractAddress: string;
+      contractType: 'Employment Agreement' | 'Loan' | 'Service Agreement';
+      contractContent: string;
+      id: string;
+    }
+  ) => void;
+
   handleCancelEdit: () => void;
   contractContent: string;
   contractType: 'Employment Agreement' | 'Loan' | 'Service Agreement';
@@ -9,6 +19,8 @@ type EditContractProps = {
   contractName: string;
   id: string;
   contractTypes?: ('Employment Agreement' | 'Loan' | 'Service Agreement')[];
+  
+
 };
 
 const EditContract: React.FC<EditContractProps> = ({
@@ -20,6 +32,7 @@ const EditContract: React.FC<EditContractProps> = ({
   contractName,
   id,
   contractTypes = ['Employment Agreement', 'Loan', 'Service Agreement'],
+  
 }) => {
 
 const [updateFormData, setUpdateFormData] = useState({
@@ -35,13 +48,18 @@ const [updateFormData, setUpdateFormData] = useState({
       <div className="edit-modal-overlay">
         <div className="edit-modal">
           <h2>Edit Contract</h2>
-          <form onSubmit={handleUpdate} className="edit-form">
+          <form onSubmit={(e) => handleUpdate(e, updateFormData)} className="edit-form">
             <div className="form-group">
               <label htmlFor="contractType">Contract Type:</label>
               <select
                 id="contractType"
-                value={contractType}
-                
+                value={updateFormData.contractType}
+                onChange={(e) =>
+                  setUpdateFormData((prev) => ({
+                    ...prev,
+                    contractType: e.target.value as any,
+                  }))
+                }
                 required
               >
                 {contractTypes.map((type) => (
@@ -53,21 +71,26 @@ const [updateFormData, setUpdateFormData] = useState({
             </div>
 
             <div className="form-group">
-              <label htmlFor="clientName">Client Name:</label>
+              <label htmlFor="contractName">Client Name:</label>
               <input
                 type="text"
-                id="clientName"
-                value={contractName}
-                
+                id="contractName"
+                value={updateFormData.contractName}
+                 onChange={(e) =>
+                  setUpdateFormData((prev) => ({
+                    ...prev,
+                    contractName: e.target.value,
+                  }))
+                }
                 placeholder="Enter client name"
                 required
               />
             </div>
 
             <div className="form-group">
-              <label htmlFor="clientAddress">Client Address:</label>
+              <label htmlFor="contractAddress">Client Address:</label>
               <textarea
-                id="clientAddress"
+                id="contractAddress"
                 value={updateFormData.contractAddress}
                 onChange={(e) =>
                   setUpdateFormData((prev) => ({
