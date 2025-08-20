@@ -96,15 +96,11 @@ function App() {
         }),
       });
       const data = await response.json();
-      /*const data = {
-        success: false,
-        message: 'Supply missing code',
-      };*/
       if (data.success) {
         setFormData({
-          clientName: "",
-          clientAddress: "",
-          contractType: "Employment Agreement",
+          clientName: clientName,
+          clientAddress: clientAddress,
+          contractType: contractType,
         });
       } else {
         alert("Error generating contract: " + data.message);
@@ -128,6 +124,7 @@ function App() {
         });
         const data = await response.json();
         if (data.success) {
+          fetchContracts();
         } else {
           alert("Error deleting contract: " + data.message);
         }
@@ -135,7 +132,6 @@ function App() {
         console.error("Error deleting contract:", error);
         alert("Error deleting contract");
       } finally {
-        fetchContracts();
         setLoading(false);
       }
     }
