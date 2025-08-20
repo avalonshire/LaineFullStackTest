@@ -232,7 +232,7 @@ function App() {
     setChatMessages((prev) => [...prev, loadingMessage]);
     console.log("chat input:", chatInput);
     try {
-      const response = await fetch("/ai-chat", {
+      const response = await fetch("http://localhost:8080/ai-chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: chatInput }),

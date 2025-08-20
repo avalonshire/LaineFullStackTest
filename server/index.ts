@@ -13,13 +13,14 @@ import {
 
 dotenv.config();
 
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 8080; // I have set the port to 8080 in .env as default since the frontend is running on port 3000
 const app = express();
 
 app.use(cors({
   origin: '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
-}));
+})); //I was encountering CORS issues 
+
 // Initialize OpenAI
 const openai = new OpenAI({
   baseURL:
