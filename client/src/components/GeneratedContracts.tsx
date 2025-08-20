@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+
 interface Contract {
   id: string;
   clientName: string;
@@ -14,12 +15,14 @@ type GeneratedContractsProps = {
   contracts: Contract[];
   handleEdit: (contract: Contract) => void;
   handleDelete: (id: string) => void;
+  loading: boolean;
 };
 
 const GeneratedContracts: React.FC<GeneratedContractsProps> = ({
   contracts,
   handleEdit,
   handleDelete,
+  loading
 }) => {
   return (
     <>
@@ -59,6 +62,10 @@ const GeneratedContracts: React.FC<GeneratedContractsProps> = ({
             </ul>
           </div>
         )}
+        { loading &&
+        <div className="loader-container">
+       <div className="loader"></div>
+       </div>}
       </div>
     </>
   );

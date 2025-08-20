@@ -362,7 +362,9 @@ function App() {
           contracts={contracts}
           handleEdit={handleEdit}
           handleDelete={handleDelete}
+          loading={loading}
         />
+        
 
         {/* Edit Contract Modal */}
         {editingContract && (
